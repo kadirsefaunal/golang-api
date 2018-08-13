@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"strconv"
 	"golang-api/models"
-)
+	)
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Welcome!")
@@ -48,5 +48,15 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 
 	todo.ID = id
 	affected := repositories.Update(todo)
+	json.NewEncoder(w).Encode(affected)
+}
+
+func DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	id, err := strconv.Atoi(params["id"])
+	models.CheckError(err)
+
+	affected := repositories.Delete(id)
 	json.NewEncoder(w).Encode(affected)
 }

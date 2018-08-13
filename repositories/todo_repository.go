@@ -71,3 +71,17 @@ func Update(todo models.Todo) int {
 	affected, err := res.RowsAffected()
 	return int(affected)
 }
+
+func Delete(id int) int {
+	db := db.Connect()
+	defer db.Close()
+
+	row, err := db.Prepare("DELETE FROM todo WHERE id=?")
+	models.CheckError(err)
+
+	res, err := row.Exec(id)
+	models.CheckError(err)
+
+	affected, err := res.RowsAffected()
+	return int(affected)
+}
