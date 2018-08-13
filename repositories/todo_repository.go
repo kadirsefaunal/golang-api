@@ -3,7 +3,7 @@ package repositories
 import (
 	"golang-api/db"
 	"golang-api/models"
-)
+	)
 
 func GetAll() []models.Todo {
 	db := db.Connect()
@@ -56,4 +56,18 @@ func Insert(todo models.Todo) int {
 	models.CheckError(err)
 
 	return int(id)
+}
+
+func Update(todo models.Todo) int {
+	db := db.Connect()
+	defer db.Close()
+
+	row, err := db.Prepare("UPDATE todo SET content=?, status=? WHERE id=?")
+	models.CheckError(err)
+
+	res, err := row.Exec(todo.Content, todo.Status, todo.ID)
+	models.CheckError(err)
+
+	affected, err := res.RowsAffected()
+	return int(affected)
 }

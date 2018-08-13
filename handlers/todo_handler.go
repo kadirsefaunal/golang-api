@@ -36,3 +36,17 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	id := repositories.Insert(todo)
 	json.NewEncoder(w).Encode(id)
 }
+
+func UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	id, err := strconv.Atoi(params["id"])
+	models.CheckError(err)
+
+	var todo models.Todo
+	json.NewDecoder(r.Body).Decode(&todo)
+
+	todo.ID = id
+	affected := repositories.Update(todo)
+	json.NewEncoder(w).Encode(affected)
+}
