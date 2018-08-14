@@ -8,7 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"strconv"
 	"golang-api/models"
-	)
+	"github.com/asaskevich/govalidator"
+)
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Welcome!")
@@ -33,8 +34,15 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo models.Todo
 	json.NewDecoder(r.Body).Decode(&todo)
 
-	id := repositories.Insert(todo)
-	json.NewEncoder(w).Encode(id)
+	result, err := govalidator.ValidateStruct(todo)
+	if err != nil {
+		json.NewEncoder(w).Encode(err.Error())
+	}
+
+	if result {
+		id := repositories.Insert(todo)
+		json.NewEncoder(w).Encode(id)
+	}
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
@@ -43,12 +51,18 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(params["id"])
 	models.CheckError(err)
 
-	var todo models.Todo
+	todo := repositories.Get(id)
 	json.NewDecoder(r.Body).Decode(&todo)
 
-	todo.ID = id
-	affected := repositories.Update(todo)
-	json.NewEncoder(w).Encode(affected)
+	result, err := govalidator.ValidateStruct(todo)
+	if err != nil {
+		json.NewEncoder(w).Encode(err.Error())
+	}
+
+	if result {
+		affected := repositories.Update(todo)
+		json.NewEncoder(w).Encode(affected)
+	}
 }
 
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { // TODO: Mantık düzenlenecek.
-			fmt.Println(claims["id"].(string))
+			fmt.Println(claims["id"])
 		} else {
 			panic(err.Error())
 		}

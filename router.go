@@ -79,11 +79,10 @@ func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
 		var handler http.Handler
+		handler = route.HandlerFunc
 
 		if route.IsProtected {
 			handler = AuthMiddleware(route.HandlerFunc)
-		} else {
-			handler = route.HandlerFunc
 		}
 
 		router.
